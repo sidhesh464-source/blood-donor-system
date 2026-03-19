@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bank Management System | Automated Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c62828;
+            --secondary: #2c3e50;
+            --accent: #26a69a;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+            --gradient: linear-gradient(135deg, #c62828 0%, #ff5252 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--secondary);
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        .header {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.5)), url('assets/hero.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 30px 20px;
+        }
+
+        .header-content h1 {
+            font-size: clamp(2.2rem, 8vw, 4rem);
+            margin-bottom: 15px;
+            font-weight: 700;
+            line-height: 1.1;
+            text-transform: uppercase;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header-content p {
+            font-size: clamp(0.9rem, 4vw, 1.2rem);
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.85;
+        }
+
+        .btn-main {
+            display: inline-block;
+            padding: 18px 45px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.3);
+            text-decoration: none;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(198, 40, 40, 0.45);
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: -80px auto 60px;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: all 0.4s ease;
+        }
+
+        .card:hover { transform: translateY(-8px); }
+
+        .card h2 {
+            margin-bottom: 22px;
+            font-size: 1.4rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        form label { font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 6px; display: block; }
+
+        form input, form select {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #fdfdfd;
+            transition: all 0.2s;
+        }
+
+        form input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(198, 40, 40, 0.1); outline: none; }
+
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (min-width: 500px) { .stock-grid { grid-template-columns: repeat(4, 1fr); } }
+
+        .stock-item {
+            background: #fff;
+            padding: 16px;
+            border-radius: 18px;
+            border: 1px solid #fee2e2;
+            text-align: center;
+        }
+
+        .stock-item .group { font-weight: 700; color: var(--primary); font-size: 1rem; }
+        .stock-item .count { font-size: 1.5rem; font-weight: 600; color: var(--secondary); margin-top: 4px; display: block;}
+
+        .table-container {
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        table { width: 100%; border-collapse: collapse; background: white; font-size: 0.95rem; }
+        th { background: #f1f5f9; color: #475569; padding: 16px; text-align: left; font-weight: 600; }
+        td { padding: 16px; border-bottom: 1px solid #f1f5f9; }
+
+        .sdg-badge {
+            background: #2E7636;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            font-weight: 500;
+            animation: slideUp 0.3s ease;
+        }
+
+        /* Module 4: Persistence Management */
+        .db-controls { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-sm { padding: 8px 16px; font-size: 0.8rem; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; background: white; color: #666; transition: 0.2s; }
+        .btn-sm:hover { background: #f8fafc; border-color: var(--primary); color: var(--primary); }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* Fixed Mobile Scaling */
+        @media (max-width: 480px) {
+            .dashboard { padding: 10px; margin-top: -40px; }
+            .card { padding: 20px; }
+            .header-content h1 { letter-spacing: 0; }
+            .btn-main { width: 100%; text-align: center; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <span class="sdg-badge">🚀 SDG 3: GOOD HEALTH</span>
+            <h1>BLOOD BANK MANAGEMENT SYSTEM</h1>
+            <p>Real-World Automated Management System (C-Model Platform)</p>
+            <a href="#dashboard" class="btn-main">Launch System Dashboard</a>
+        </div>
+    </header>
+
+    <div class="dashboard" id="dashboard">
+        <div class="grid">
+            <!-- Module 1: Registration -->
+            <div class="card">
+                <h2>Donor Registration</h2>
+                <form id="regForm">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="e.g., John Doe" required id="name">
+                    <label>Age (18-65)</label>
+                    <input type="number" placeholder="Enter age" required id="age">
+                    <label>Blood Group</label>
+                    <select id="group" required>
+                        <option value="">Select Group</option>
+                        <option>O+</option><option>O-</option>
+                        <option>A+</option><option>A-</option>
+                        <option>B+</option><option>B-</option>
+                        <option>AB+</option><option>AB-</option>
+                    </select>
+                    <label>Contact Details</label>
+                    <input type="text" placeholder="Phone or Email" required id="contact">
+                    <label>Last Donation Date</label>
+                    <input type="text" placeholder="DD/MM/YYYY" required id="last_donation">
+                    <button type="submit" id="submitBtn" class="btn-main" style="width: 100%">Save Donor to Database</button>
+                </form>
+            </div>
+
+            <!-- Module 2: Stock -->
+            <div class="card">
+                <h2>Live Inventory Stock</h2>
+                <div class="stock-grid" id="stockGrid"></div>
+                
+                <div style="margin-top: 35px; border-top: 1px solid #f1f5f9; padding-top: 25px;">
+                    <h3 style="margin-bottom: 12px; font-size: 1rem; color: #475569;">Hospital Issue Module</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" placeholder="E.g. O+" id="issueGroup" style="margin-bottom: 0; padding: 10px;">
+                        <button onclick="issueBlood()" class="btn-main" style="padding: 10px 20px; border-radius: 12px; font-size: 0.9rem;">Issue Unit</button>
+                    </div>
+                </div>
+
+                <!-- Module 4: Persistence Actions -->
+                <div class="db-controls">
+                    <button class="btn-sm" onclick="exportData()">📑 Export PDF Report</button>
+                    <button class="btn-sm" onclick="clearDb()">🗑️ Wipe local data</button>
+                </div>
+            </div>
+
+            <!-- Search & Actions -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2>Donor Database & Maintenance</h2>
+                <div style="margin-bottom: 20px;">
+                    <input type="text" placeholder="🔍 Search database by Name or Group..." id="searchBox" onkeyup="filterDonors()" style="margin-bottom: 0;">
+                </div>
+                <div class="table-container">
+                    <table id="donorTable">
+                        <thead>
+                            <tr>
+                                <th>Donor Identity</th>
+                                <th>Group</th>
+                                <th>Contact</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donorBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Database Synced Successfully ✅</div>
+
+    <!-- Professional Report Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        let donors = [];
+        let editIndex = -1;
+
+        // MODULE 4: PERSISTENCE & REPORTING
+        function loadDatabase() {
+            const saved = localStorage.getItem('blood_bank_db');
+            if (saved) {
+                donors = JSON.parse(saved);
+                renderAll();
+            }
+        }
+
+        function saveDatabase() {
+            localStorage.setItem('blood_bank_db', JSON.stringify(donors));
+        }
+
+        function renderAll() {
+            renderDonors();
+            renderStock();
+        }
+
+        function renderDonors() {
+            const body = document.getElementById('donorBody');
+            body.innerHTML = donors.map((d, idx) => `
+                <tr>
+                    <td><b>${d.name}</b><br><small style="color:#64748b; font-size: 0.75rem;">Age: ${d.age}</small></td>
+                    <td><span style="color:#c62828; font-weight:700;">${d.group}</span></td>
+                    <td>${d.contact}</td>
+                    <td style="text-align: right;">
+                        <button onclick="prepareEdit(${idx})" class="btn-sm" style="border-color: #3b82f6; color: #3b82f6;">✏️ Edit</button>
+                        <button onclick="deleteDonor(${idx})" class="btn-sm" style="border-color: #ef4444; color: #ef4444;">🗑️ Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+            if(donors.length === 0) body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8">No records found.</td></tr>';
+        }
+
+        function renderStock() {
+            const groups = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
+            const counts = groups.reduce((acc, g) => ({...acc, [g]: 0}), {});
+            donors.forEach(d => { if(counts[d.group] !== undefined) counts[d.group]++; });
+
+            const grid = document.getElementById('stockGrid');
+            grid.innerHTML = groups.map(grp => `
+                <div class="stock-item">
+                    <span class="group">${grp}</span>
+                    <span class="count">${counts[grp]}</span>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('regForm').onsubmit = (e) => {
+            e.preventDefault();
+            const age = parseInt(document.getElementById('age').value);
+            
+            if (age < 18 || age > 65) {
+                showToast('❌ Age error: 18 to 65 only');
+                return;
+            }
+
+            const donorData = {
+                name: document.getElementById('name').value,
+                age: age,
+                group: document.getElementById('group').value,
+                contact: document.getElementById('contact').value,
+                last_donation: document.getElementById('last_donation').value
+            };
+            
+            if (editIndex === -1) {
+                donors.unshift(donorData);
+                showToast('New Donor Registered ✅');
+            } else {
+                donors[editIndex] = donorData;
+                editIndex = -1;
+                document.getElementById('submitBtn').innerText = 'Save Donor to Database';
+                showToast('Donor Record Updated ✅');
+            }
+            
+            saveDatabase();
+            renderAll();
+            e.target.reset();
+        };
+
+        function prepareEdit(idx) {
+            const d = donors[idx];
+            document.getElementById('name').value = d.name;
+            document.getElementById('age').value = d.age;
+            document.getElementById('group').value = d.group;
+            document.getElementById('contact').value = d.contact;
+            document.getElementById('last_donation').value = d.last_donation;
+            
+            editIndex = idx;
+            document.getElementById('submitBtn').innerText = 'Update Donor Details 💾';
+            window.scrollTo({top: document.getElementById('regForm').offsetTop - 100, behavior: 'smooth'});
+        }
+
+        function deleteDonor(idx) {
+            if (confirm(`Remove record for "${donors[idx].name}"?`)) {
+                donors.splice(idx, 1);
+                saveDatabase();
+                renderAll();
+                showToast('Record Deleted Successfully 🗑️');
+            }
+        }
+
+        function issueBlood() {
+            const target = document.getElementById('issueGroup').value.toUpperCase();
+            const idx = donors.findIndex(d => d.group === target);
+            
+            if (idx !== -1) {
+                donors.splice(idx, 1);
+                saveDatabase();
+                renderAll();
+                showToast('Blood Unit Issued to Hospital ✅');
+            } else {
+                showToast('❌ Blood Group out of stock!');
+            }
+        }
+
+        function filterDonors() {
+            const val = document.getElementById('searchBox').value.toUpperCase();
+            const rows = document.querySelectorAll('#donorBody tr');
+            rows.forEach(row => { row.style.display = row.innerText.toUpperCase().includes(val) ? '' : 'none'; });
+        }
+
+        // PROFESSIONAL PDF EXPORT LOGIC
+        async function exportData() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header Section
+            doc.setFontSize(22);
+            doc.setTextColor(198, 40, 40); // Professional Brand Red
+            doc.text("BLOOD BANK MANAGEMENT SYSTEM", 105, 20, { align: "center" });
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text("Official Donor Record Report | SDG 3 Compliance", 105, 28, { align: "center" });
+            
+            doc.setDrawColor(200, 200, 200);
+            doc.line(20, 32, 190, 32);
+
+            // Table Body
+            const bodyData = donors.map(d => [
+                d.name,
+                d.age,
+                d.group,
+                d.contact,
+                d.last_donation
+            ]);
+
+            doc.autoTable({
+                startY: 40,
+                head: [['Name of Donor', 'Age', 'Blood Group', 'Contact No', 'Donation Date']],
+                body: bodyData,
+                theme: 'striped',
+                headStyles: { fillColor: [44, 62, 80], fontSize: 11 },
+                bodyStyles: { fontSize: 10 },
+                alternateRowStyles: { fillColor: [249, 250, 251] }
+            });
+
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for(let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.text(`Generated on ${new Date().toLocaleDateString()} | Page ${i} of ${pageCount}`, 105, 285, { align: "center" });
+            }
+
+            doc.save('Blood_Bank_Database_Report.pdf');
+            showToast('Professional PDF Generated 📑');
+        }
+
+        function clearDb() {
+            if(confirm('Wipe ALL database records permanently?')) {
+                donors = [];
+                saveDatabase();
+                renderAll();
+                showToast('Database Wiped Clean');
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        loadDatabase();
+    </script>
+</body>
+</html>
