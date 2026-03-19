@@ -31,11 +31,12 @@
             color: var(--secondary);
             overflow-x: hidden;
             width: 100%;
+            -webkit-font-smoothing: antialiased;
         }
 
         .header {
-            min-height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.5)), url('assets/hero.png');
+            min-height: 80vh; /* Controlled fixed header height */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('assets/hero.png');
             background-size: cover;
             background-position: center;
             display: flex;
@@ -43,25 +44,28 @@
             justify-content: center;
             text-align: center;
             color: white;
-            padding: 30px 20px;
+            padding: 40px 20px;
+        }
+
+        .header-content {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         .header-content h1 {
-            font-size: clamp(2.2rem, 8vw, 4rem);
-            margin-bottom: 15px;
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            margin-bottom: 20px;
+            letter-spacing: -1px;
             font-weight: 700;
-            line-height: 1.1;
-            text-transform: uppercase;
-            animation: fadeInDown 0.8s ease-out;
+            line-height: 1.2;
         }
 
         .header-content p {
-            font-size: clamp(0.9rem, 4vw, 1.2rem);
-            margin-bottom: 30px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            opacity: 0.85;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            margin-bottom: 35px;
+            opacity: 0.9;
+            font-weight: 300;
         }
 
         .btn-main {
@@ -85,17 +89,17 @@
         }
 
         .dashboard {
-            max-width: 1200px;
-            margin: -80px auto 60px;
-            padding: 20px;
+            max-width: 1080px; /* Strict fixed container width */
+            margin: -90px auto 100px;
+            padding: 0 20px;
             position: relative;
             z-index: 10;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
         }
 
         .card {
